@@ -36,8 +36,13 @@ a record of past assessments.
 | API | [backend/app/routers/](backend/app/routers) | auth, assessments, tokens (vault), operations, jobs, reference. |
 | Job engine | [backend/app/jobs.py](backend/app/jobs.py) | Runs activities in worker threads, persists log lines, supports cancellation. |
 | Frontend | [frontend/src/](frontend/src) | React + Vite + TypeScript. |
+| MCP server | [mcp_server/](mcp_server) | Remote Streamable-HTTP MCP server wrapping the API as tools. |
 
 The original `AzureRedOps.py` CLI is untouched and still works standalone.
+
+**Docs:** the full HTTP API reference (endpoints, schemas, per-activity params, SSE
+stream) is in [API.md](API.md). The MCP server is documented in
+[mcp_server/README.md](mcp_server/README.md).
 
 ---
 
@@ -103,6 +108,31 @@ renders inputs dynamically.
   HAR. Headless capture works for unattended flows; interactive auth needs a
   display (set `PLAYWRIGHT_HEADLESS=0` and attach a VNC sidecar if you need to
   click through MFA manually).
+
+---
+
+## MCP server (drive the console from an AI agent)
+
+The stack includes a remote **MCP server** (`mcp` service) that exposes the whole API as
+Model Context Protocol tools over Streamable HTTP, so an MCP client on your machine can run
+assessments, operations, and the token vault.
+
+```bash
+# In .env, set a bearer token:
+python3 -c "import secrets;print(secrets.token_urlsafe(32))"   # -> MCP_API_KEY
+
+docker compose up --build -d        # mcp endpoint: http://127.0.0.1:9090/mcp
+```
+
+Connect a client (e.g. Claude Code):
+
+```bash
+claude mcp add --transport http azureredops http://127.0.0.1:9090/mcp \
+  --header "Authorization: Bearer <your MCP_API_KEY>"
+```
+
+The port is published on `127.0.0.1` only and gated behind the bearer token. See
+[mcp_server/README.md](mcp_server/README.md) for the full tool list and config.
 
 ---
 

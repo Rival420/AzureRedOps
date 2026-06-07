@@ -1,15 +1,42 @@
+# --- Secrets / local environment ---
+.env
+.env.*
+!.env.example
 .azure_creds
+
+# --- Credentials & private keys (never commit these) ---
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+# ...except the bundled self-signed localhost cert used by the PKCE callback flow
+!includes/web/cert.pem
+!includes/web/key.pem
+
+# --- Original CLI working dirs / output ---
 AzureRedOps/
 AzureRedOps3.13/
+output.txt
+*.har
 
-# GUI stack
-.env
-frontend/node_modules/
-frontend/dist/
+# --- Databases (e.g. local SQLite dev db) ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Python ---
 **/__pycache__/
 **/*.pyc
-*.har
-output.txt
-
 .venv*/
+*.egg-info/
+
+# --- Node / frontend ---
+frontend/node_modules/
+frontend/dist/
 frontend/*.tsbuildinfo
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+*.log

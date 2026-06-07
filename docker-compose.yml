@@ -47,5 +47,27 @@ services:
     ports:
       - "${WEB_PORT:-8080}:80"
 
+  # Remote MCP server (Streamable HTTP). Wraps the backend API as MCP tools.
+  # Published on 127.0.0.1 only, so it's reachable from this machine but not the LAN.
+  # Connect an MCP client to http://127.0.0.1:${MCP_PORT}/mcp with header
+  #   Authorization: Bearer ${MCP_API_KEY}
+  mcp:
+    build:
+      context: .
+      dockerfile: mcp_server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:8000
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
+      MCP_API_KEY: ${MCP_API_KEY:-}
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: 9000
+      MCP_PATH: /mcp
+    ports:
+      - "127.0.0.1:${MCP_PORT:-9090}:9000"
+
 volumes:
   pgdata:
