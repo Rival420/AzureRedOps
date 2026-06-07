@@ -4,6 +4,9 @@
 !.env.example
 .azure_creds
 
+# --- DB backups produced by azureredops.sh ---
+backups/
+
 # --- Credentials & private keys (never commit these) ---
 *.pem
 *.key
