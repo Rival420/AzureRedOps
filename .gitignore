@@ -1,3 +1,15 @@
 .azure_creds
 AzureRedOps/
 AzureRedOps3.13/
+
+# GUI stack
+.env
+frontend/node_modules/
+frontend/dist/
+**/__pycache__/
+**/*.pyc
+*.har
+output.txt
+
+.venv*/
+frontend/*.tsbuildinfo

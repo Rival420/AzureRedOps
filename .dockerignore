@@ -1,0 +1,11 @@
+**/__pycache__/
+**/*.pyc
+frontend/node_modules/
+frontend/dist/
+.git/
+.azure_creds
+*.har
+output.txt
+AzureRedOps/
+AzureRedOps3.13/
+.env

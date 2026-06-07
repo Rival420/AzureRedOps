@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-azureredops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-azureredops}
+      POSTGRES_DB: ${POSTGRES_DB:-azureredops}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-azureredops}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-azureredops}:${POSTGRES_PASSWORD:-azureredops}@db:5432/${POSTGRES_DB:-azureredops}
+      SECRET_KEY: ${SECRET_KEY:-please-change-me}
+      VAULT_KEY: ${VAULT_KEY:-}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
+      ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-720}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    ports:
+      # Exposed only for the optional PKCE (auth-app) callback at https://localhost:2342.
+      - "2342:2342"
+    # API itself is reached through the frontend's nginx proxy; uncomment to expose directly:
+    # ports:
+    #   - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+volumes:
+  pgdata:
