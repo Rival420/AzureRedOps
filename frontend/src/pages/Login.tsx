@@ -27,27 +27,42 @@ export default function Login() {
   return (
     <div className="login-wrap">
       <form className="card login-card" onSubmit={submit}>
-        <div className="brand" style={{ marginBottom: 18, fontSize: 18 }}>
+        <div
+          className="brand"
+          style={{ marginBottom: 6, fontSize: 20 }}
+        >
           <span className="dot" /> AzureRedOps <small>console</small>
         </div>
+        <p
+          className="tac-meta"
+          style={{ marginBottom: 22 }}
+        >
+          tactical access terminal <span className="cursor" />
+        </p>
         {error && <div className="error-banner">{error}</div>}
         <div className="field">
-          <label>Username</label>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus />
+          <label>Operator ID</label>
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoFocus
+          />
         </div>
         <div className="field">
-          <label>Password</label>
+          <label>Passphrase</label>
           <input
             type="password"
+            placeholder="••••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <button className="btn-primary" style={{ width: "100%" }} disabled={busy}>
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? "Authenticating…" : "Establish Session"}
         </button>
-        <p className="notice" style={{ marginTop: 16 }}>
-          Authorized, educational security testing only.
+        <p className="notice" style={{ marginTop: 18 }}>
+          Authorized, educational security testing only. All operations are
+          logged.
         </p>
       </form>
     </div>
