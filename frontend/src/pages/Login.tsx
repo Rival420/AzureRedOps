@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, isAuthed } = useAuth();
   const nav = useNavigate();
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // Redirect once authenticated (covers both a fresh login and landing on
+  // /login while already signed in). Keyed on the reactive isAuthed flag.
+  useEffect(() => {
+    if (isAuthed) nav("/", { replace: true });
+  }, [isAuthed, nav]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -16,7 +22,6 @@ export default function Login() {
     setError("");
     try {
       await login(username, password);
-      nav("/");
     } catch {
       setError("Invalid username or password.");
     } finally {
